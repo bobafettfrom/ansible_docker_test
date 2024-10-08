@@ -1,0 +1,10 @@
+---
+- name: install software
+  package:
+    name:
+      - htop
+      - ncdu
+      - git
+      - nano
+      - acl
+    state: present

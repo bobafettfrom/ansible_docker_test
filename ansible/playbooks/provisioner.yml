@@ -1,0 +1,10 @@
+---
+- hosts: all
+  become: true
+  roles:
+    - provisioner
+    - users
+    - zsh_ohmyzsh
+    - ssh
+    - nginx
+    - upload_static

@@ -1,0 +1,43 @@
+user www-data;
+worker_processes auto;
+pid /run/nginx.pid;
+
+events {
+    worker_connections 1024;
+}
+
+http {
+    include /etc/nginx/mime.types;
+    default_type application/octet-stream;
+    sendfile on;
+    keepalive_timeout 65;
+    gzip on;
+    gzip_vary on;
+    gzip_proxied any;
+    gzip_comp_level 6;
+    gzip_min_length 256;
+    gzip_types text/plain application/javascript application/x-javascript text/css application/xml image/svg+xml image/jpeg image/x-icon;
+
+    log_format main '$remote_addr - $remote_user [$time_local] "$request" '
+                    '$status $body_bytes_sent "$http_referer" '
+                    '"$http_user_agent" "$http_x_forwarded_for"';
+
+    access_log /var/log/nginx/access.log main;
+    error_log /var/log/nginx/error.log warn;
+
+    server {
+        listen 80;
+        server_name localhost;
+
+        location /images {
+            root /var/www/static;
+            autoindex on;
+            expires 1h;
+            add_header Cache-Control "public";
+        }
+
+        location / {
+            return 404;
+        }
+    }
+}

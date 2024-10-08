@@ -1,0 +1,23 @@
+---
+- name: Create custom groups
+  group:
+    name: "{{ item }}"
+    state: present
+  loop: "{{ groups_list }}"
+
+- name: Manage users
+  user:
+    name: "{{ item.name }}"
+    state: "{{ item.state }}"
+    shell: "{{ item.shell }}"
+    password: "{{ item.password | password_hash('sha512', item.password) if item.password is defined else omit}}"
+    groups: "{{ item.groups | join(',') }}"
+  loop: "{{ users_list }}"
+
+- name: Set up authorized SSH keys for users
+  authorized_key:
+    user: "{{ item.name }}"
+    key: "{{ item.ssh_key }}"
+    state: present
+  when: item.state == 'present' and item.ssh_key is defined
+  loop: "{{ users_list }}"

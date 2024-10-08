@@ -1,0 +1,20 @@
+---
+users_list:
+  - name: user1
+    shell: /bin/bash
+    state: present
+    password: "1234"
+    ssh_key: "ssh-rsa AAAAB3Nz..."
+    groups:
+      - sudo
+      - custom_group
+  - name: user2
+    shell: /bin/zsh
+    password: "12345"
+    state: present
+    groups:
+      - custom_group_2
+
+groups_list:
+  - custom_group
+  - custom_group_2

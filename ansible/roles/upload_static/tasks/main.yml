@@ -1,0 +1,13 @@
+---
+- name: Upload image
+  copy:
+    src: "{{ role_path }}/files/"
+    dest: /var/www/static/images
+
+- name: Set permission
+  file:
+    path: /var/www/static/images
+    owner: www-data
+    group: www-data
+    mode: '0755'
+    state: directory

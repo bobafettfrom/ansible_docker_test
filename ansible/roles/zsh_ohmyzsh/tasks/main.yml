@@ -1,0 +1,29 @@
+---
+- name: Load variables from users role
+  include_vars: "{{ role_path }}/../users/vars/main.yml"
+
+- name: Install zsh
+  package:
+    name: zsh
+    state: present
+
+
+- name: Ensure ~/.oh-my-zsh directory exists
+  stat: path="/home/{{ item.name }}/.oh-my-zsh"
+  when: item.shell == '/bin/zsh'
+  loop: "{{ users_list }}"
+  register: oh_my_zsh_exists
+
+- name: Install Oh My Zsh for users with zsh shell
+  get_url:
+    url: https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh
+    dest: /home/{{ item.name }}/install_ohmyzsh.sh
+    mode: '0777'
+  loop: "{{ users_list }}"
+  when: (item.shell == '/bin/zsh') and (oh_my_zsh_exists.results[1]['stat']['exists']  == False)
+
+- name: Run Oh My Zsh installation script
+  command: /home/{{ item.name }}/install_ohmyzsh.sh --unattended
+  become_user: "{{ item.name }}"
+  loop: "{{ users_list }}"
+  when: (item.shell == '/bin/zsh') and (oh_my_zsh_exists.results[1]['stat']['exists']  == False)
